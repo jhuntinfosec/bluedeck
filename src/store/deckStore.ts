@@ -16,6 +16,7 @@ type DeckState = {
   logout: () => void;
   addColumn: (kind: ColumnKind, settings?: Partial<DeckColumn['settings']>, title?: string) => void;
   addDiscoveredColumn: (result: DiscoveryResult) => void;
+  openProfile: (item: FeedItem) => void;
   openThread: (item: FeedItem) => void;
   removeColumn: (id: string) => void;
   moveColumn: (id: string, direction: -1 | 1) => void;
@@ -81,6 +82,16 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       },
       result.title,
     );
+  },
+  openProfile: (item) => {
+    const actor = item.authorHandle;
+    const title = item.authorName ? `${item.authorName} (@${actor})` : `@${actor}`;
+    const existing = get().columns.find((column) => column.kind === 'profile' && column.settings.actor === actor);
+    if (existing) {
+      void get().refreshColumn(existing.id);
+      return;
+    }
+    get().addColumn('profile', { actor, title, pollSeconds: 90 }, title);
   },
   openThread: (item) => {
     const title = `Thread: @${item.authorHandle}`;

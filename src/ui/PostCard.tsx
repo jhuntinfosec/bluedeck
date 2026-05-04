@@ -10,6 +10,7 @@ type Props = {
 
 export function PostCard({ item }: Props) {
   const openCompose = useDeckStore((state) => state.openCompose);
+  const openProfile = useDeckStore((state) => state.openProfile);
   const openThread = useDeckStore((state) => state.openThread);
   const actOnPost = useDeckStore((state) => state.actOnPost);
   const session = useDeckStore((state) => state.session);
@@ -20,11 +21,13 @@ export function PostCard({ item }: Props) {
     <>
       <article className="post-card" role="button" tabIndex={0} onClick={() => openThread(item)} onKeyDown={(event) => event.key === 'Enter' && openThread(item)}>
         <header className="post-author">
-          {item.authorAvatar ? <img src={item.authorAvatar} alt="" /> : <div className="avatar-fallback" />}
-          <div>
-            <strong>{item.authorName || item.authorHandle}</strong>
-            <span>@{item.authorHandle}</span>
-          </div>
+          <button className="author-button" title={`Open @${item.authorHandle}`} onClick={(event) => stopAndRun(event, () => openProfile(item))}>
+            {item.authorAvatar ? <img src={item.authorAvatar} alt="" /> : <span className="avatar-fallback" />}
+            <span>
+              <strong>{item.authorName || item.authorHandle}</strong>
+              <span>@{item.authorHandle}</span>
+            </span>
+          </button>
           {item.indexedAt ? <time>{new Date(item.indexedAt).toLocaleString()}</time> : null}
         </header>
         {item.reason ? <p className="post-context">{item.reason}</p> : null}

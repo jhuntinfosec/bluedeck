@@ -266,9 +266,26 @@ textarea {
 
 .post-author {
   display: grid;
-  grid-template-columns: 34px 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
+}
+
+.author-button {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  text-align: left;
+}
+
+.author-button:hover strong {
+  text-decoration: underline;
 }
 
 .post-author img,
@@ -279,11 +296,22 @@ textarea {
   background: #cbd5df;
 }
 
+.avatar-fallback {
+  display: block;
+}
+
 .post-author strong,
 .post-author span,
 .post-author time {
   display: block;
   font-size: 12px;
+}
+
+.post-author strong,
+.post-author span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-author span,

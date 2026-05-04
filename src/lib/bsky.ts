@@ -256,6 +256,18 @@ export class BskyService {
     }
   }
 
+  async follow(item: FeedItem): Promise<void> {
+    const agent = this.requireAgent();
+    if (!item.authorDid) throw new Error('This post does not include an author DID.');
+    await agent.follow(item.authorDid);
+  }
+
+  async unfollow(item: FeedItem): Promise<void> {
+    const agent = this.requireAgent();
+    if (!item.authorFollowingUri) throw new Error('This post does not include a follow record URI.');
+    await agent.deleteFollow(item.authorFollowingUri);
+  }
+
   async deletePost(item: FeedItem): Promise<void> {
     const agent = this.requireAgent();
     await agent.deletePost(item.uri);

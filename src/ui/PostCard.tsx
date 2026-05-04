@@ -13,9 +13,12 @@ export function PostCard({ item }: Props) {
   const openProfile = useDeckStore((state) => state.openProfile);
   const openThread = useDeckStore((state) => state.openThread);
   const actOnPost = useDeckStore((state) => state.actOnPost);
+  const actOnAuthor = useDeckStore((state) => state.actOnAuthor);
+  const busyAction = useDeckStore((state) => state.busyAction);
   const session = useDeckStore((state) => state.session);
   const [activeMedia, setActiveMedia] = useState<FeedMedia>();
   const isOwnPost = item.authorHandle === session?.handle;
+  const authorActionBusy = busyAction === `follow:${item.authorHandle}` || busyAction === `unfollow:${item.authorHandle}`;
 
   return (
     <>
@@ -28,6 +31,23 @@ export function PostCard({ item }: Props) {
               <span>@{item.authorHandle}</span>
             </span>
           </button>
+          {!isOwnPost && item.authorDid ? (
+            <button
+              className={`follow-button ${item.authorFollowingUri ? 'following' : ''}`}
+              disabled={authorActionBusy}
+              onClick={(event) =>
+                stopAndRun(event, () => {
+                  if (item.authorFollowingUri) {
+                    if (window.confirm(`Unfollow @${item.authorHandle}?`)) void actOnAuthor('unfollow', item);
+                  } else {
+                    void actOnAuthor('follow', item);
+                  }
+                })
+              }
+            >
+              {item.authorFollowingUri ? 'Following' : 'Follow'}
+            </button>
+          ) : null}
           {item.indexedAt ? <time>{new Date(item.indexedAt).toLocaleString()}</time> : null}
         </header>
         {item.reason ? <p className="post-context">{item.reason}</p> : null}

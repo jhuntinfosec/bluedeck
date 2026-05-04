@@ -28,6 +28,7 @@ type DeckState = {
   closeCompose: () => void;
   submitPost: (text: string, images: File[]) => Promise<void>;
   actOnPost: (action: 'like' | 'repost' | 'bookmark' | 'delete', item: FeedItem) => Promise<void>;
+  actOnAuthor: (action: 'follow' | 'unfollow', item: FeedItem) => Promise<void>;
 };
 
 const initialColumns = loadColumns() ?? defaultColumns();
@@ -190,6 +191,17 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       if (action === 'repost') await bsky.repost(item);
       if (action === 'bookmark') await bsky.bookmark(item);
       if (action === 'delete') await bsky.deletePost(item);
+      set({ busyAction: undefined });
+      await get().refreshAll();
+    } catch (error) {
+      set({ busyAction: undefined, loginError: errorMessage(error) });
+    }
+  },
+  actOnAuthor: async (action, item) => {
+    set({ busyAction: `${action}:${item.authorHandle}` });
+    try {
+      if (action === 'follow') await bsky.follow(item);
+      if (action === 'unfollow') await bsky.unfollow(item);
       set({ busyAction: undefined });
       await get().refreshAll();
     } catch (error) {

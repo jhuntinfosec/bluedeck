@@ -37,9 +37,11 @@ export type FeedItem = {
   id: string;
   uri: string;
   cid?: string;
+  authorDid?: string;
   authorHandle: string;
   authorName?: string;
   authorAvatar?: string;
+  authorFollowingUri?: string;
   indexedAt?: string;
   text: string;
   reason?: string;

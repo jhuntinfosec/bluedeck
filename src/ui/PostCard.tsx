@@ -64,6 +64,7 @@ export function PostCard({ item }: Props) {
           </div>
         ) : null}
         {item.external ? <ExternalCard item={item} /> : null}
+        {item.quotedPost ? <QuotedPostCard item={item} /> : null}
         <footer className="post-actions">
           <button title="Reply" onClick={(event) => stopAndRun(event, () => openCompose({ mode: 'reply', item }))}>
             <MessageCircle size={16} />
@@ -125,6 +126,40 @@ function ExternalCard({ item }: { item: FeedItem }) {
         {item.external.description ? <small>{item.external.description}</small> : null}
       </span>
     </a>
+  );
+}
+
+function QuotedPostCard({ item }: { item: FeedItem }) {
+  const quoted = item.quotedPost;
+  const openThread = useDeckStore((state) => state.openThread);
+  if (!quoted) return null;
+
+  const quotedItem: FeedItem = {
+    id: quoted.uri,
+    uri: quoted.uri,
+    cid: quoted.cid,
+    authorHandle: quoted.authorHandle,
+    authorName: quoted.authorName,
+    authorAvatar: quoted.authorAvatar,
+    indexedAt: quoted.indexedAt,
+    text: quoted.text,
+    images: quoted.media.filter((media) => media.type === 'image').map((media) => media.thumb),
+    links: [],
+    media: quoted.media,
+    external: quoted.external,
+    raw: quoted,
+  };
+
+  return (
+    <button className="quote-card" onClick={(event) => stopAndRun(event, () => openThread(quotedItem))}>
+      {quoted.authorAvatar ? <img src={quoted.authorAvatar} alt="" /> : <span className="quote-avatar" />}
+      <span>
+        <strong>{quoted.authorName || quoted.authorHandle}</strong>
+        <small>@{quoted.authorHandle}</small>
+        {quoted.unavailableReason ? <em>{quoted.unavailableReason}</em> : <span className="quote-text">{quoted.text}</span>}
+        {quoted.media.length > 0 ? <small>{quoted.media.length} media attachment{quoted.media.length === 1 ? '' : 's'}</small> : null}
+      </span>
+    </button>
   );
 }
 

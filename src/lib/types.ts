@@ -58,6 +58,7 @@ export type FeedItem = {
   links: FeedLink[];
   media: FeedMedia[];
   external?: FeedExternal;
+  quotedPost?: QuotedPost;
   raw: unknown;
 };
 
@@ -87,6 +88,19 @@ export type FeedExternal = {
   title: string;
   description?: string;
   thumb?: string;
+};
+
+export type QuotedPost = {
+  uri: string;
+  cid?: string;
+  authorHandle: string;
+  authorName?: string;
+  authorAvatar?: string;
+  indexedAt?: string;
+  text: string;
+  media: FeedMedia[];
+  external?: FeedExternal;
+  unavailableReason?: string;
 };
 
 export type ColumnRuntime = {

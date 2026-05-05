@@ -422,6 +422,57 @@ textarea {
   background: #f8fafc;
 }
 
+.quote-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  margin: 8px 0;
+  border: 1px solid #d7dee8;
+  border-radius: 7px;
+  padding: 8px;
+  background: #f8fafc;
+  color: inherit;
+  text-align: left;
+}
+
+.quote-card:hover strong {
+  text-decoration: underline;
+}
+
+.quote-card img,
+.quote-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #cbd5df;
+}
+
+.quote-card > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.quote-card strong,
+.quote-card small,
+.quote-card em,
+.quote-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quote-card small,
+.quote-card em {
+  color: #667587;
+  font-size: 12px;
+}
+
+.quote-text {
+  font-size: 13px;
+}
+
 .external-card img {
   width: 68px;
   height: 68px;

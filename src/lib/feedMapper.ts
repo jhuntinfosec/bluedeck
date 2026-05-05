@@ -30,6 +30,7 @@ export function mapFeedView(raw: any): FeedItem | undefined {
     links: extractLinks(record),
     media: extractMedia(post),
     external: extractExternal(post),
+    quotedPost: extractQuotedPost(post),
     raw,
   };
 }
@@ -58,6 +59,7 @@ export function mapNotification(raw: any): FeedItem | undefined {
     links: extractLinks(raw?.record),
     media: extractMedia(raw),
     external: extractExternal(raw),
+    quotedPost: extractQuotedPost(raw),
     raw,
   };
 }
@@ -143,6 +145,64 @@ function extractExternal(post: any): FeedItem['external'] {
 function mediaEmbed(embed: any): any {
   if (embed?.media) return embed.media;
   return embed;
+}
+
+function extractQuotedPost(post: any): FeedItem['quotedPost'] {
+  const recordEmbed = recordEmbedView(post?.embed);
+  const record = recordEmbed?.record;
+  if (!record) return undefined;
+
+  if (record.notFound) {
+    return {
+      uri: record.uri,
+      authorHandle: 'unknown',
+      text: '',
+      media: [],
+      unavailableReason: 'Quoted post not found',
+    };
+  }
+
+  if (record.blocked) {
+    return {
+      uri: record.uri,
+      authorHandle: record.author?.handle ?? 'unknown',
+      text: '',
+      media: [],
+      unavailableReason: 'Quoted post unavailable',
+    };
+  }
+
+  if (record.detached) {
+    return {
+      uri: record.uri,
+      authorHandle: 'unknown',
+      text: '',
+      media: [],
+      unavailableReason: 'Quoted post detached',
+    };
+  }
+
+  if (!record.uri || !record.author) return undefined;
+  const value = record.value;
+  const embeds = Array.isArray(record.embeds) ? record.embeds : [];
+
+  return {
+    uri: record.uri,
+    cid: record.cid,
+    authorHandle: record.author.handle ?? 'unknown',
+    authorName: record.author.displayName,
+    authorAvatar: record.author.avatar,
+    indexedAt: record.indexedAt,
+    text: typeof value?.text === 'string' ? value.text : '',
+    media: embeds.flatMap((embed: any) => extractMedia({ embed })),
+    external: embeds.map((embed: any) => extractExternal({ embed })).find(Boolean),
+  };
+}
+
+function recordEmbedView(embed: any): any {
+  if (embed?.record?.record) return embed.record;
+  if (embed?.record) return embed;
+  return undefined;
 }
 
 function extractLinks(record: any): FeedItem['links'] {

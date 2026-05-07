@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { bsky } from '../lib/bsky';
 import { createColumn, defaultColumns, validateColumn } from '../lib/columns';
-import { loadColumns, loadSession, saveColumns, saveSession } from '../lib/storage';
-import type { ColumnKind, ColumnRuntime, ComposeIntent, DeckColumn, DiscoveryResult, FeedItem, SessionData } from '../lib/types';
+import { loadColumns, loadSession, loadTheme, saveColumns, saveSession, saveTheme } from '../lib/storage';
+import type { ColumnKind, ColumnRuntime, ComposeIntent, DeckColumn, DiscoveryResult, FeedItem, SessionData, ThemeMode } from '../lib/types';
 
 type DeckState = {
   session?: SessionData;
   columns: DeckColumn[];
   runtime: Record<string, ColumnRuntime>;
+  theme: ThemeMode;
   loginError?: string;
   busyAction?: string;
   compose?: ComposeIntent;
@@ -29,16 +30,19 @@ type DeckState = {
   submitPost: (text: string, images: File[]) => Promise<void>;
   actOnPost: (action: 'like' | 'repost' | 'bookmark' | 'delete', item: FeedItem) => Promise<void>;
   actOnAuthor: (action: 'follow' | 'unfollow', item: FeedItem) => Promise<void>;
+  toggleTheme: () => void;
 };
 
 const initialColumns = loadColumns() ?? defaultColumns();
 const initialSession = loadSession();
+const initialTheme = loadTheme() ?? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 if (initialSession) bsky.resume(initialSession);
 
 export const useDeckStore = create<DeckState>((set, get) => ({
   session: initialSession,
   columns: initialColumns,
   runtime: {},
+  theme: initialTheme,
   hydrate: () => {
     const session = loadSession();
     if (session) bsky.resume(session);
@@ -207,6 +211,11 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     } catch (error) {
       set({ busyAction: undefined, loginError: errorMessage(error) });
     }
+  },
+  toggleTheme: () => {
+    const theme = get().theme === 'dark' ? 'light' : 'dark';
+    saveTheme(theme);
+    set({ theme });
   },
 }));
 

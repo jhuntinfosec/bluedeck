@@ -33,6 +33,8 @@ export type SessionData = {
   active: boolean;
 };
 
+export type ThemeMode = 'light' | 'dark';
+
 export type FeedItem = {
   id: string;
   uri: string;

@@ -1,14 +1,19 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { LogIn } from 'lucide-react';
 import { useDeckStore } from '../store/deckStore';
 
 export function LoginView() {
+  const theme = useDeckStore((state) => state.theme);
   const login = useDeckStore((state) => state.login);
   const loginError = useDeckStore((state) => state.loginError);
   const busy = useDeckStore((state) => state.busyAction === 'login');
   const [service, setService] = useState('https://bsky.social');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();

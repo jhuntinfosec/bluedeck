@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Plus, RefreshCcw, Send, LogOut } from 'lucide-react';
+import { LogOut, Moon, Plus, RefreshCcw, Send, Sun } from 'lucide-react';
 import { useDeckStore } from '../store/deckStore';
 import { LoginView } from './LoginView';
 import { ColumnBoard } from './ColumnBoard';
@@ -12,6 +12,12 @@ export function App() {
   const logout = useDeckStore((state) => state.logout);
   const openCompose = useDeckStore((state) => state.openCompose);
   const compose = useDeckStore((state) => state.compose);
+  const theme = useDeckStore((state) => state.theme);
+  const toggleTheme = useDeckStore((state) => state.toggleTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   useEffect(() => {
     if (session) void refreshAll();
@@ -33,6 +39,9 @@ export function App() {
           </button>
           <button className="icon-button" title="Refresh all columns" onClick={() => void refreshAll()}>
             <RefreshCcw size={17} />
+          </button>
+          <button className="icon-button" title={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
           </button>
           <AddColumnDialog trigger={<Plus size={18} />} />
           <button className="icon-button" title="Log out" onClick={logout}>

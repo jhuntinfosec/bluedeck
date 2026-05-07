@@ -1,8 +1,55 @@
 :root {
-  color: #1d2733;
-  background: #eef2f5;
+  --bg: #eef2f5;
+  --bg-gradient-start: #dbeafe;
+  --bg-gradient-end: #ecfdf5;
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-alt: #e8edf3;
+  --border: #cbd5df;
+  --border-soft: #d7dee8;
+  --border-muted: #d8e0ea;
+  --text: #1d2733;
+  --text-muted: #667587;
+  --text-strong: #344255;
+  --primary: #0f6fec;
+  --on-primary: #ffffff;
+  --primary-strong: #0f5fc0;
+  --primary-soft: #e8f2ff;
+  --success-soft: #dff6e6;
+  --success-text: #116329;
+  --danger: #b42318;
+  --shadow: rgba(35, 48, 65, 0.14);
+  --shadow-strong: rgba(23, 32, 43, 0.22);
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+[data-theme='dark'] {
+  --bg: #0e1116;
+  --bg-gradient-start: #151b24;
+  --bg-gradient-end: #10201b;
+  --surface: #161b22;
+  --surface-muted: #111820;
+  --surface-alt: #25303c;
+  --border: #303a47;
+  --border-soft: #384453;
+  --border-muted: #2b3542;
+  --text: #e7edf5;
+  --text-muted: #9aa8b8;
+  --text-strong: #d8e2ee;
+  --primary: #5aa2ff;
+  --on-primary: #07101f;
+  --primary-strong: #8bbcff;
+  --primary-soft: #102842;
+  --success-soft: #123522;
+  --success-text: #75d791;
+  --danger: #ff8f86;
+  --shadow: rgba(0, 0, 0, 0.32);
+  --shadow-strong: rgba(0, 0, 0, 0.48);
+  color-scheme: dark;
 }
 
 * {
@@ -11,6 +58,7 @@
 
 body {
   margin: 0;
+  background: var(--bg);
 }
 
 button,
@@ -36,8 +84,8 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  border-bottom: 1px solid #cbd5df;
-  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
 }
 
 .topbar h1,
@@ -54,7 +102,7 @@ button {
 .topbar p,
 .muted,
 .column-header p {
-  color: #667587;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -74,10 +122,10 @@ button {
 .post-actions a {
   height: 32px;
   min-width: 32px;
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--border);
   border-radius: 7px;
-  background: #ffffff;
-  color: #344255;
+  background: var(--surface);
+  color: var(--text-strong);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -96,8 +144,8 @@ button {
   border: 0;
   border-radius: 7px;
   padding: 0 12px;
-  background: #0f6fec;
-  color: #fff;
+  background: var(--primary);
+  color: var(--on-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -113,16 +161,16 @@ button:disabled {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #dbeafe, #ecfdf5);
+  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
 }
 
 .login-panel {
   width: min(420px, calc(100vw - 28px));
-  background: #fff;
-  border: 1px solid #d7dee8;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 16px 40px rgba(35, 48, 65, 0.14);
+  box-shadow: 0 16px 40px var(--shadow);
 }
 
 .login-panel h1 {
@@ -146,10 +194,10 @@ button:disabled {
 input,
 textarea,
 select {
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--border);
   border-radius: 7px;
-  background: #fff;
-  color: #1d2733;
+  background: var(--surface);
+  color: var(--text);
 }
 
 input,
@@ -165,7 +213,7 @@ textarea {
 }
 
 .error-text {
-  color: #b42318;
+  color: var(--danger);
 }
 
 .column-board {
@@ -181,8 +229,8 @@ textarea {
   height: calc(100vh - 78px);
   display: grid;
   grid-template-rows: auto auto auto 1fr auto;
-  background: #f8fafc;
-  border: 1px solid #cbd5df;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -194,7 +242,7 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 8px;
-  border-bottom: 1px solid #d8e0ea;
+  border-bottom: 1px solid var(--border-muted);
 }
 
 .column-header > div:first-child {
@@ -234,8 +282,8 @@ textarea {
   min-width: 24px;
   height: 22px;
   border-radius: 999px;
-  background: #dff6e6;
-  color: #116329;
+  background: var(--success-soft);
+  color: var(--success-text);
   display: inline-grid;
   place-items: center;
   font-size: 12px;
@@ -254,13 +302,13 @@ textarea {
 
 .post-card {
   padding: 10px;
-  border-top: 1px solid #e1e7ef;
-  background: #fff;
+  border-top: 1px solid var(--border-muted);
+  background: var(--surface);
   cursor: pointer;
 }
 
 .post-card:focus-visible {
-  outline: 2px solid #0f6fec;
+  outline: 2px solid var(--primary);
   outline-offset: -2px;
 }
 
@@ -290,19 +338,19 @@ textarea {
 
 .follow-button {
   height: 28px;
-  border: 1px solid #0f6fec;
+  border: 1px solid var(--primary);
   border-radius: 7px;
   padding: 0 9px;
-  background: #0f6fec;
-  color: #fff;
+  background: var(--primary);
+  color: var(--on-primary);
   font-size: 12px;
   font-weight: 700;
 }
 
 .follow-button.following {
-  border-color: #cbd5df;
-  background: #fff;
-  color: #344255;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text-strong);
 }
 
 .post-author img,
@@ -310,7 +358,7 @@ textarea {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #cbd5df;
+  background: var(--border);
 }
 
 .avatar-fallback {
@@ -334,7 +382,7 @@ textarea {
 .post-author span,
 .post-author time,
 .post-context {
-  color: #667587;
+  color: var(--text-muted);
 }
 
 .post-context {
@@ -347,8 +395,8 @@ textarea {
   margin: 8px 0 0;
   padding: 3px 7px;
   border-radius: 999px;
-  background: #e8f2ff;
-  color: #0f5fc0;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
   font-size: 12px;
   font-weight: 700;
 }
@@ -362,7 +410,7 @@ textarea {
 }
 
 .post-text a {
-  color: #0f6fec;
+  color: var(--primary);
   text-decoration: none;
 }
 
@@ -381,7 +429,7 @@ textarea {
   position: relative;
   border: 0;
   padding: 0;
-  background: #e8edf3;
+  background: var(--surface-alt);
   border-radius: 7px;
   overflow: hidden;
   min-width: 0;
@@ -414,12 +462,12 @@ textarea {
   grid-template-columns: 68px 1fr;
   gap: 8px;
   margin: 8px 0;
-  border: 1px solid #d7dee8;
+  border: 1px solid var(--border-soft);
   border-radius: 7px;
   overflow: hidden;
   color: inherit;
   text-decoration: none;
-  background: #f8fafc;
+  background: var(--surface-muted);
 }
 
 .quote-card {
@@ -428,10 +476,10 @@ textarea {
   grid-template-columns: 28px minmax(0, 1fr);
   gap: 8px;
   margin: 8px 0;
-  border: 1px solid #d7dee8;
+  border: 1px solid var(--border-soft);
   border-radius: 7px;
   padding: 8px;
-  background: #f8fafc;
+  background: var(--surface-muted);
   color: inherit;
   text-align: left;
 }
@@ -445,7 +493,7 @@ textarea {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #cbd5df;
+  background: var(--border);
 }
 
 .quote-card > span {
@@ -465,7 +513,7 @@ textarea {
 
 .quote-card small,
 .quote-card em {
-  color: #667587;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -477,7 +525,7 @@ textarea {
   width: 68px;
   height: 68px;
   object-fit: cover;
-  background: #d7dee8;
+  background: var(--border-soft);
 }
 
 .external-card span {
@@ -502,7 +550,7 @@ textarea {
 
 .external-card small {
   -webkit-line-clamp: 2;
-  color: #667587;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -514,14 +562,14 @@ textarea {
 .post-actions a {
   border: 0;
   background: transparent;
-  color: #667587;
+  color: var(--text-muted);
   min-width: 26px;
   height: 28px;
   font-size: 12px;
 }
 
 .post-actions .active {
-  color: #0f6fec;
+  color: var(--primary);
 }
 
 .load-more {
@@ -581,10 +629,10 @@ textarea {
   width: min(640px, calc(100vw - 28px));
   max-height: calc(100vh - 100px);
   overflow: auto;
-  background: #fff;
+  background: var(--surface);
   border-radius: 8px;
-  border: 1px solid #cbd5df;
-  box-shadow: 0 18px 50px rgba(23, 32, 43, 0.22);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px var(--shadow-strong);
   padding: 14px;
 }
 
@@ -612,9 +660,9 @@ textarea {
 .result-list button,
 .example-row button {
   min-height: 42px;
-  border: 1px solid #d7dee8;
+  border: 1px solid var(--border-soft);
   border-radius: 7px;
-  background: #f8fafc;
+  background: var(--surface-muted);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -644,7 +692,7 @@ textarea {
 }
 
 .result-list span {
-  color: #667587;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -664,7 +712,7 @@ textarea {
 
 .compose-context {
   margin: 0;
-  color: #667587;
+  color: var(--text-muted);
   font-size: 13px;
   max-height: 72px;
   overflow: hidden;

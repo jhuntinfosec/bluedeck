@@ -9,10 +9,11 @@ type DeckState = {
   columns: DeckColumn[];
   runtime: Record<string, ColumnRuntime>;
   theme: ThemeMode;
+  hydrating: boolean;
   loginError?: string;
   busyAction?: string;
   compose?: ComposeIntent;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
   login: (input: { service: string; identifier: string; password: string }) => Promise<void>;
   logout: () => void;
   addColumn: (kind: ColumnKind, settings?: Partial<DeckColumn['settings']>, title?: string) => void;
@@ -36,33 +37,52 @@ type DeckState = {
 const initialColumns = loadColumns() ?? defaultColumns();
 const initialSession = loadSession();
 const initialTheme = loadTheme() ?? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-if (initialSession) bsky.resume(initialSession);
+let authRun = 0;
 
 export const useDeckStore = create<DeckState>((set, get) => ({
-  session: initialSession,
+  session: undefined,
   columns: initialColumns,
   runtime: {},
   theme: initialTheme,
-  hydrate: () => {
+  hydrating: Boolean(initialSession),
+  hydrate: async () => {
+    const run = ++authRun;
     const session = loadSession();
-    if (session) bsky.resume(session);
-    set({ session, columns: loadColumns() ?? defaultColumns() });
+    set({ columns: loadColumns() ?? defaultColumns(), hydrating: Boolean(session) });
+    if (!session) {
+      if (run === authRun) set({ session: undefined, runtime: {}, hydrating: false });
+      return;
+    }
+    try {
+      const resumedSession = await bsky.resume(session);
+      if (run !== authRun) return;
+      set({ session: resumedSession, loginError: undefined, hydrating: false });
+    } catch (error) {
+      if (run !== authRun) return;
+      bsky.clear();
+      saveSession(undefined);
+      set({ session: undefined, runtime: {}, loginError: errorMessage(error), hydrating: false });
+    }
   },
   login: async (input) => {
-    set({ loginError: undefined, busyAction: 'login' });
+    const run = ++authRun;
+    set({ loginError: undefined, busyAction: 'login', hydrating: false });
     try {
       const session = await bsky.login(input);
+      if (run !== authRun) return;
       saveSession(session);
       set({ session, busyAction: undefined });
       await get().refreshAll();
     } catch (error) {
+      if (run !== authRun) return;
       set({ loginError: errorMessage(error), busyAction: undefined });
     }
   },
   logout: () => {
+    authRun += 1;
     bsky.clear();
     saveSession(undefined);
-    set({ session: undefined, runtime: {}, loginError: undefined });
+    set({ session: undefined, runtime: {}, loginError: undefined, hydrating: false, busyAction: undefined });
   },
   addColumn: (kind, settings, title) => {
     const column = createColumn(kind, { title, settings: { pollSeconds: 90, ...settings } });
@@ -218,6 +238,8 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     set({ theme });
   },
 }));
+
+if (initialSession) void useDeckStore.getState().hydrate();
 
 function setRuntime(set: (partial: Partial<DeckState> | ((state: DeckState) => Partial<DeckState>)) => void, id: string, runtime: ColumnRuntime): void {
   set((state) => ({ runtime: { ...state.runtime, [id]: runtime } }));

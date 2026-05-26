@@ -1,6 +1,8 @@
 import { BskyAgent, RichText } from '@atproto/api';
+import type { AtpSessionEvent } from '@atproto/api';
 import type { ColumnKind, DeckColumn, DiscoveryResult, FeedItem, SessionData } from './types';
 import { mapFeedView, mapNotification, mapThread } from './feedMapper';
+import { saveSession } from './storage';
 
 export type FetchResult = {
   items: FeedItem[];
@@ -17,35 +19,42 @@ export class BskyService {
   private agent?: BskyAgent;
   private session?: SessionData;
 
+  constructor(private readonly onSessionChange?: (session: SessionData | undefined, event: AtpSessionEvent) => void) {}
+
   async login(input: LoginInput): Promise<SessionData> {
-    const agent = new BskyAgent({ service: input.service });
+    const agent = this.createAgent(input.service);
     const result = await agent.login({
       identifier: input.identifier,
       password: input.password,
     });
-    const session = result.data as any;
     this.agent = agent;
-    this.session = {
-      service: input.service,
-      handle: session.handle ?? input.identifier,
-      did: session.did,
-      accessJwt: session.accessJwt,
-      refreshJwt: session.refreshJwt,
-      active: true,
-    };
+    this.session = sessionWithService(input.service, result.data as SessionData);
     return this.session;
   }
 
-  resume(session: SessionData): void {
-    const agent = new BskyAgent({ service: session.service });
-    agent.resumeSession(session as any);
+  async resume(session: SessionData): Promise<SessionData> {
+    const agent = this.createAgent(session.service);
     this.agent = agent;
     this.session = session;
+    await agent.resumeSession(session as any);
+    this.agent = agent;
+    this.session = sessionWithService(session.service, (agent.session ?? session) as SessionData);
+    return this.session;
   }
 
   clear(): void {
     this.agent = undefined;
     this.session = undefined;
+  }
+
+  private createAgent(service: string): BskyAgent {
+    return new BskyAgent({
+      service,
+      persistSession: (event, session) => {
+        this.session = session ? sessionWithService(service, session as SessionData) : undefined;
+        this.onSessionChange?.(this.session, event);
+      },
+    });
   }
 
   async fetchColumn(column: DeckColumn, cursor?: string): Promise<FetchResult> {
@@ -324,4 +333,15 @@ function toQuery(params: Record<string, string | number | undefined>): string {
   return encoded ? `?${encoded}` : '';
 }
 
-export const bsky = new BskyService();
+export const bsky = new BskyService((session) => saveSession(session));
+
+function sessionWithService(service: string, session: SessionData): SessionData {
+  return {
+    service,
+    handle: session.handle,
+    did: session.did,
+    accessJwt: session.accessJwt,
+    refreshJwt: session.refreshJwt,
+    active: session.active ?? true,
+  };
+}

@@ -8,6 +8,7 @@ import { Composer } from './Composer';
 
 export function App() {
   const session = useDeckStore((state) => state.session);
+  const hydrating = useDeckStore((state) => state.hydrating);
   const refreshAll = useDeckStore((state) => state.refreshAll);
   const logout = useDeckStore((state) => state.logout);
   const openCompose = useDeckStore((state) => state.openCompose);
@@ -22,6 +23,17 @@ export function App() {
   useEffect(() => {
     if (session) void refreshAll();
   }, [session, refreshAll]);
+
+  if (hydrating) {
+    return (
+      <main className="login-page">
+        <section className="login-panel">
+          <h1>Bluedeck</h1>
+          <p className="muted">Resuming session...</p>
+        </section>
+      </main>
+    );
+  }
 
   if (!session) return <LoginView />;
 

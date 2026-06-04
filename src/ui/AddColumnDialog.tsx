@@ -12,8 +12,8 @@ const quickColumns: Array<{ kind: ColumnKind; label: string; icon: ReactNode }> 
   { kind: 'notifications', label: 'Notifications', icon: <Bell size={16} /> },
   { kind: 'bookmarks', label: 'Bookmarks', icon: <Bookmark size={16} /> },
   { kind: 'search', label: 'Search', icon: <Search size={16} /> },
-  { kind: 'feed', label: 'Feed URI', icon: <Rss size={16} /> },
-  { kind: 'list', label: 'List URI', icon: <List size={16} /> },
+  { kind: 'feed', label: 'Feed Link', icon: <Rss size={16} /> },
+  { kind: 'list', label: 'List Link', icon: <List size={16} /> },
   { kind: 'profile', label: 'Profile', icon: <User size={16} /> },
 ];
 
@@ -91,7 +91,7 @@ export function AddColumnDialog({ trigger }: Props) {
                 <button onClick={() => setQuery(exampleListUri)}>{exampleListName} list</button>
               </div>
               <div className="inline-form">
-                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="handle, feed name, or at:// URI" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="handle, feed name, bsky.app link, or at:// URI" />
                 <button onClick={() => void runDiscovery()} disabled={loading}>
                   {loading ? 'Searching...' : 'Search'}
                 </button>
@@ -137,11 +137,11 @@ export function AddColumnDialog({ trigger }: Props) {
               <div className="inline-form">
                 <select value={manualKind} onChange={(event) => setManualKind(event.target.value as ColumnKind)}>
                   <option value="search">Search</option>
-                  <option value="feed">Feed URI</option>
-                  <option value="list">List URI</option>
+                  <option value="feed">Feed Link</option>
+                  <option value="list">List Link</option>
                   <option value="profile">Profile</option>
                 </select>
-                <input value={manualValue} onChange={(event) => setManualValue(event.target.value)} placeholder="query, handle, or at:// URI" />
+                <input value={manualValue} onChange={(event) => setManualValue(event.target.value)} placeholder="query, handle, bsky.app link, or at:// URI" />
                 <button onClick={addManualColumn}>Add</button>
               </div>
             </div>

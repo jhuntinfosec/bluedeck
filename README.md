@@ -61,9 +61,14 @@ Sign in with:
 
 ## Usage Notes
 
-Use the `+` button to add columns. Built-in column types include home, notifications, bookmarks, search, feed URI, list URI, and profile.
+Use the `+` button to add columns. Built-in column types include home, notifications, bookmarks, search, feed links, list links, and profile.
 
-For feeds and lists, Bluedeck expects AT-URIs:
+For feeds and lists, Bluedeck accepts either Bluesky web links or AT-URIs:
+
+```text
+https://bsky.app/profile/did:plc:.../lists/...
+https://bsky.app/profile/handle.example/feed/...
+```
 
 ```text
 at://did:plc:.../app.bsky.feed.generator/...
@@ -75,13 +80,13 @@ The add-column dialog includes working examples:
 - Bluesky Discover feed
 - Bluesky Community Showcase list
 
-To find your own feed URIs:
+To find your own feed AT-URIs:
 
 ```bash
 curl "https://public.api.bsky.app/xrpc/app.bsky.feed.getActorFeeds?actor=YOUR_HANDLE"
 ```
 
-To find your own list URIs:
+To find your own list AT-URIs:
 
 ```bash
 curl "https://public.api.bsky.app/xrpc/app.bsky.graph.getLists?actor=YOUR_HANDLE"
@@ -106,7 +111,7 @@ npm run check     # Run build, unit tests, and e2e tests
 - Bluedeck stores session tokens in browser `localStorage`. This is acceptable for a personal local tool, but it is not a production-grade auth model for a hosted app.
 - Use a Bluesky app password. Do not use your main password.
 - Bookmarks use raw XRPC calls because the installed `@atproto/api` version does not expose the bookmark namespace yet.
-- Feed discovery in the UI is intentionally basic. Direct AT-URI paste is the most reliable way to add exact feeds/lists.
+- Feed discovery in the UI is intentionally basic. Direct Bluesky link or AT-URI paste is the most reliable way to add exact feeds/lists.
 - Starter packs are not currently supported as columns.
 - The production bundle is currently large because this is a single-page app with the Bluesky SDK and video playback support bundled together.
 

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { bsky } from '../lib/bsky';
+import { normalizeColumnUriInput } from '../lib/atUri';
 import { createColumn, defaultColumns, validateColumn } from '../lib/columns';
 import { loadColumns, loadSession, loadTheme, saveColumns, saveSession, saveTheme } from '../lib/storage';
 import type { ColumnKind, ColumnRuntime, ComposeIntent, DeckColumn, DiscoveryResult, FeedItem, SessionData, ThemeMode } from '../lib/types';
@@ -85,7 +86,11 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     set({ session: undefined, runtime: {}, loginError: undefined, hydrating: false, busyAction: undefined });
   },
   addColumn: (kind, settings, title) => {
-    const column = createColumn(kind, { title, settings: { pollSeconds: 90, ...settings } });
+    const normalizedSettings =
+      (kind === 'feed' || kind === 'list' || kind === 'thread') && settings?.uri
+        ? { ...settings, uri: normalizeColumnUriInput(settings.uri) }
+        : settings;
+    const column = createColumn(kind, { title, settings: { pollSeconds: 90, ...normalizedSettings } });
     const error = validateColumn(column);
     if (error) {
       setRuntimeError(set, column.id, error);

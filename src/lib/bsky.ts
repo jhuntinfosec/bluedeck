@@ -1,6 +1,7 @@
 import { BskyAgent, RichText } from '@atproto/api';
 import type { AtpSessionEvent } from '@atproto/api';
 import type { ColumnKind, DeckColumn, DiscoveryResult, FeedItem, SessionData } from './types';
+import { discoveryResultFromColumnInput } from './atUri';
 import { mapFeedView, mapNotification, mapThread } from './feedMapper';
 import { saveSession } from './storage';
 
@@ -135,8 +136,9 @@ export class BskyService {
     const trimmed = query.trim();
     if (!trimmed) return [];
 
-    if (trimmed.startsWith('at://')) {
-      return [uriDiscoveryResult(trimmed)];
+    const directResult = discoveryResultFromColumnInput(trimmed);
+    if (directResult) {
+      return [directResult];
     }
 
     const [actors, feeds, lists] = await Promise.all([
@@ -311,17 +313,6 @@ function mapFeedResponse(data: any): FetchResult {
     items: data.feed.map(mapFeedView).filter(Boolean) as FeedItem[],
     cursor: data.cursor,
   };
-}
-
-function uriDiscoveryResult(uri: string): DiscoveryResult {
-  const collection = uri.split('/')[3];
-  if (collection === 'app.bsky.graph.list') {
-    return { id: `list:${uri}`, kind: 'list', title: 'List', uri };
-  }
-  if (collection === 'app.bsky.feed.generator') {
-    return { id: `feed:${uri}`, kind: 'feed', title: 'Feed', uri };
-  }
-  return { id: `feed:${uri}`, kind: 'feed', title: 'AT-URI', uri };
 }
 
 function toQuery(params: Record<string, string | number | undefined>): string {
